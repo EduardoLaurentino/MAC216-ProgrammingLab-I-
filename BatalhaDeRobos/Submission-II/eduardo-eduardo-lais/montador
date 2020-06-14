@@ -1,0 +1,54 @@
+from sys import stdin
+
+l = stdin.readline()
+ip = 0
+
+tabsim = {}
+
+print("#include <stdio.h>")
+print("#include <stdlib.h>")
+print("#include \"arena.h\"\n")
+
+
+print("INSTR programa[] = {")
+while l:
+    label = op = ""
+    arg_t = ""
+    arg_valor = 0
+    try:
+        l = l[:l.index('#')]
+    except:
+        pass
+    keys = l.split()
+    if len(keys) > 0 and keys[0].endswith(":"):
+        label = keys[0][:-1]              #jogando fora o ':'
+        tabsim[label]=ip
+        keys.pop(0)
+    if len(keys) > 0:
+        op = keys.pop(0)
+    if len(keys) > 0:
+        arg_t = keys.pop(0)
+    if len(keys) > 0:
+        arg_valor = keys.pop(0)
+        if arg_valor in tabsim:
+            arg_valor = tabsim[arg_valor]
+    if op != "":
+        print("  {%s, {%s, %s}},"%(op,arg_t,arg_valor))
+    else:
+        print("")
+    l = stdin.readline()
+    ip += 1
+print("};")
+
+print("")
+
+#cria arena, 6 maquinas, registros, insere 2 exercitos
+print("int main(int ac, char **av) { \n Arena *a = cria_arena(); \n")
+print(" Maquina *maq0 = cria_maquina(programa); \n   RegistroMaquina(a, maq0); \n Maquina *maq1 = cria_maquina(programa); \n   RegistroMaquina(a, maq1); \n Maquina *maq2 = cria_maquina(programa); \n  RegistroMaquina(a, maq2); \n  InsereExercito(a); \n Maquina *maq3 = cria_maquina(programa); \n   RegistroMaquina(a, maq3); \n Maquina *maq4 = cria_maquina(programa); \n   RegistroMaquina(a, maq4); \n Maquina *maq5 = cria_maquina(programa); \n   RegistroMaquina(a, maq5); \n   InsereExercito(a); \n")
+
+#executa 1000 rodadas
+print(" escalonador(a, 1000); \n")
+
+#libera memoria
+print(" destroi_maquina(maq0);\n  destroi_maquina(maq1);\n destroi_maquina(maq2);\n destroi_maquina(maq3);\n destroi_maquina(maq4);\n destroi_maquina(maq5);\n destroi_arena(a);\n return 0;\n}")
+
